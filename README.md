@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Research Project Page
 
-## Getting Started
+A demo/landing page for a research paper — the kind of page you'd host at
+`<lab>.github.io/<paper>-site` (title, authors, abstract, method, qualitative
+results with before/after sliders, and a copy-able BibTeX). Built with
+**Next.js (App Router) + Tailwind CSS**.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev        # dev server at http://localhost:3000
+npm run build      # production build
+npm start          # serve the production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Editing content — the one file that matters
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All page content lives in **`src/content/paper.ts`**. Edit that single file to
+fill in your paper — the layout, styling, and components read from it. Setting a
+field to `""` or `[]` hides the corresponding UI (e.g. an empty `links` array
+removes the button row; empty `results` removes the Results section).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Section    | Field in `paper.ts`      |
+|------------|--------------------------|
+| Title/venue| `title`, `venue`         |
+| Authors    | `authors`, `affiliations`, `authorNotes` |
+| Buttons    | `links` (Paper / arXiv / Code / Video / Dataset) |
+| Teaser     | `teaserImage` **or** `teaserVideo`, `teaserCaption` |
+| Abstract   | `abstract`               |
+| Method     | `method` (figure + paragraphs) |
+| Results    | `results.comparisons` (sliders), `results.videos` |
+| Citation   | `bibtex`                 |
 
-## Learn More
+## Adding your own images / videos
 
-To learn more about Next.js, take a look at the following resources:
+Drop files under `public/` and reference them by path from `paper.ts`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+public/
+  assets/            # figures (teaser, method diagram, before/after)
+  results/           # your result images & mp4 videos
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+e.g. `before: "/results/scene1_input.png"`, `src: "/results/demo.mp4"`.
+The placeholders in `public/assets/*.svg` are safe to delete once replaced.
 
-## Deploy on Vercel
+## Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+  content/paper.ts     # ← edit this
+  app/
+    layout.tsx         # metadata (reads title/abstract from paper.ts)
+    page.tsx           # section order
+  components/          # Hero, Abstract, Method, Results, CompareSlider, BibTeX, ...
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploying as a static site (e.g. GitHub Pages)
+
+The page is fully static. To export a static bundle, add to `next.config.ts`:
+
+```ts
+const nextConfig = { output: "export", images: { unoptimized: true } };
+```
+
+then `npm run build` produces an `out/` folder you can host anywhere. (If
+deploying under a subpath like `user.github.io/repo`, also set `basePath` and
+`assetPrefix` to `"/repo"`.)
