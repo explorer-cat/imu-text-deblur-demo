@@ -158,9 +158,9 @@ export const paper: Paper = {
       "합성 테스트(레벨당 50장, EasyOCR 주 평가)의 전 구성 비교와, 그 차이가 어디서 오는지를 가른 " +
       "대조군 분해. 견고성은 세 학습 시드와 제2 인식기(PaddleOCR)로 교차 점검했다 — IMU 충실도 " +
       "이득은 3시드 중 2시드에서만 재현되어 안정성이 제한적이었고, 충실도→가독성 전이는 두 인식기 중 " +
-      "PaddleOCR에서만 유의해 평가 인식기 선택에 의존할 가능성이 나타났다. 아래 슬라이더는 흐린 입력과 " +
-      "복원 결과를 드래그로 비교하며 버튼으로 IMU 없는 복원 ↔ 제안(IMU)을 전환할 수 있고, 직접 수집한 " +
-      "실촬영 6개 대상(iPhone 13)의 결과를 성공·실패 구분 없이 그대로 전시한다.",
+      "PaddleOCR에서만 유의해 평가 인식기 선택에 의존할 가능성이 나타났다. 아래 슬라이더는 세 묶음이다: " +
+      "① 합성 화질(PSNR) 비교 — 드래그로 IMU 없는 복원↔IMU 복원을 나란히 놓고 획 선명도 차이를 본다(정렬된 정답이 있어 화질 측정 가능), " +
+      "② 합성 인식(CER) 비교, ③ 직접 수집한 실촬영 6개 대상(iPhone 13) — 도메인 갭으로 복원이 실패한 사례까지 그대로 전시한다.",
     table: {
       caption:
         "합성 테스트 문자 오류율(CER %, 낮을수록 좋음) — 블러 약함/보통/강함. 흐린 입력을 그대로 읽는 것이 기준선. " +
@@ -217,6 +217,45 @@ export const paper: Paper = {
       },
     ],
     comparisons: [
+      {
+        label:
+          "합성 화질(PSNR) 비교 — “관성센서 2,205”. 드래그하면 왼쪽=IMU 없는 복원, 오른쪽=IMU 복원. 같은 백본·손실에서 IMU가 획을 더 또렷하게 되살려 PSNR이 +2.2 dB 높다. 합성은 정렬된 정답(GT)이 있어 화질을 실제로 측정할 수 있다.",
+        before: "assets/q0_base.png",
+        after: "assets/q0_imu.png",
+        beforeLabel: "IMU 없음 · 23.9 dB",
+        afters: [
+          { src: "assets/q0_imu.png", label: "제안 (IMU) · 26.1 dB" },
+          { src: "assets/q0_gt.png", label: "정답 (GT)" },
+          { src: "assets/q0_blur.png", label: "흐린 입력" },
+        ],
+        aspect: "1 / 1",
+      },
+      {
+        label:
+          "합성 화질(PSNR) 비교 — “INVOICE”. IMU 복원이 IMU 없는 복원보다 PSNR +1.9 dB. 왼쪽↔오른쪽을 드래그해 획 선명도 차이를 비교하고, 버튼으로 정답과도 맞춰 볼 수 있다.",
+        before: "assets/q1_base.png",
+        after: "assets/q1_imu.png",
+        beforeLabel: "IMU 없음 · 25.1 dB",
+        afters: [
+          { src: "assets/q1_imu.png", label: "제안 (IMU) · 27.0 dB" },
+          { src: "assets/q1_gt.png", label: "정답 (GT)" },
+          { src: "assets/q1_blur.png", label: "흐린 입력" },
+        ],
+        aspect: "1 / 1",
+      },
+      {
+        label:
+          "합성 화질(PSNR) 비교 — “비상구 경북대학교”. IMU 복원이 PSNR +1.6 dB. 다만 이 화질 이득은 세 학습 시드 중 둘에서 재현되어 안정성은 제한적이며(부록 F), 실촬영 도메인으로는 전이되지 않았다(아래 실촬영 슬라이더 참조).",
+        before: "assets/q2_base.png",
+        after: "assets/q2_imu.png",
+        beforeLabel: "IMU 없음 · 21.6 dB",
+        afters: [
+          { src: "assets/q2_imu.png", label: "제안 (IMU) · 23.2 dB" },
+          { src: "assets/q2_gt.png", label: "정답 (GT)" },
+          { src: "assets/q2_blur.png", label: "흐린 입력" },
+        ],
+        aspect: "1 / 1",
+      },
       {
         label:
           "합성 · 약한 블러 — “관성센서 2,205”. IMU 없는 복원(20%)보다 IMU 융합(10%)이 정확하다.",
