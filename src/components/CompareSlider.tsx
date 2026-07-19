@@ -34,7 +34,11 @@ export function CompareSlider({ item }: { item: ComparisonItem }) {
 
   const onPointerDown = (e: React.PointerEvent) => {
     dragging.current = true;
-    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      /* pointer may not be active (e.g. synthetic events); dragging still works */
+    }
     updateFromClientX(e.clientX);
   };
   const onPointerMove = (e: React.PointerEvent) => {
@@ -48,11 +52,12 @@ export function CompareSlider({ item }: { item: ComparisonItem }) {
     <figure>
       <div
         ref={containerRef}
-        style={{ aspectRatio: item.aspect ?? "16 / 9" }}
-        className="relative w-full touch-none select-none overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm"
+        style={{ aspectRatio: item.aspect ?? "16 / 9", touchAction: "pan-y" }}
+        className="relative w-full cursor-ew-resize select-none overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={stop}
+        onPointerCancel={stop}
         onPointerLeave={stop}
       >
         {/* After (full, underneath) */}
@@ -94,7 +99,9 @@ export function CompareSlider({ item }: { item: ComparisonItem }) {
           </div>
         </div>
 
-        {/* Keyboard-accessible control */}
+        {/* Keyboard-accessible control. pointer-events-none so it never
+            intercepts touch/mouse (the container handles all dragging via
+            pointer events); keyboard focus + arrow keys still work. */}
         <input
           type="range"
           min={0}
@@ -102,7 +109,7 @@ export function CompareSlider({ item }: { item: ComparisonItem }) {
           value={pos}
           onChange={(e) => setPos(Number(e.target.value))}
           aria-label={`Reveal amount for ${item.label}`}
-          className="absolute inset-x-0 bottom-0 z-20 w-full cursor-ew-resize opacity-0"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 w-full opacity-0"
         />
       </div>
       {variants.length > 1 && (
